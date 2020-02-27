@@ -1,4 +1,5 @@
 import Drawable from '/js/lib/drawable.js';
+import Point from '/js/lib/point.js';
 
 export default class Map extends Drawable {
     constructor(tilesets, cols, rows, tileSize, tiles) {
@@ -18,6 +19,8 @@ export default class Map extends Drawable {
     }
 
     draw(ctx, interp) {
+        let tileset = this.getTileset('dungeon');
+
         for (let c = 0; c < this.getCols(); c++) {
             for (let r = 0; r < this.getRows(); r++) {
                 let num = this.getTile(c, r);
@@ -27,7 +30,12 @@ export default class Map extends Drawable {
                     continue;
                 }
 
-                this.getTileset('dungeon').drawTile(ctx, num, c, r);
+                let point = new Point(
+                    c * tileset.getTileSize(),
+                    r * tileset.getTileSize()
+                );
+
+                tileset.drawTile(ctx, point, num);
             }
         }
     }

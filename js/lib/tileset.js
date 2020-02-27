@@ -24,7 +24,7 @@ export default class Tileset {
         );
     }
 
-    drawTile(ctx, num, column, row) {
+    drawTile(ctx, point, num) {
         let img    = this.getImage(),
             size   = this.getTileSize(),
             tsCols = this.getCols();
@@ -37,15 +37,15 @@ export default class Tileset {
         }
 
         ctx.drawImage(
-            img,               // image
-            x,                 // source x
-            y,                 // source y
-            size,              // source width
-            size,              // source height
-            column * size,     // target x
-            row * size,        // target y
-            size,              // target width
-            size               // target height
+            img,                 // image
+            x,                   // source x
+            y,                   // source y
+            size,                // source width
+            size,                // source height
+            point.getX(),        // target x
+            point.getY(),        // target y
+            size,                // target width
+            size                 // target height
         );
     }
 
