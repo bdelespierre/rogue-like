@@ -1,15 +1,13 @@
 import Drawable from '/js/lib/drawable.js';
-import Point from '/js/lib/point.js';
+import Layer from '/js/lib/layer.js';
 
 export default class Map extends Drawable {
-    constructor(tilesets, cols, rows, tileSize, tiles) {
+    constructor(cols, rows, tileSize) {
         super();
 
-        this.setTilesets(tilesets)
-            .setCols(cols)
+        this.setCols(cols)
             .setRows(rows)
-            .setTileSize(tileSize)
-            .setTiles(tiles);
+            .setTileSize(tileSize);
     }
 
     *load(loader) {
@@ -19,47 +17,7 @@ export default class Map extends Drawable {
     }
 
     draw(ctx, interp) {
-        let tileset = this.getTileset('dungeon');
-
-        for (let c = 0; c < this.getCols(); c++) {
-            for (let r = 0; r < this.getRows(); r++) {
-                let num = this.getTile(c, r);
-
-                // 0 => empty tile
-                if (num === 0) {
-                    continue;
-                }
-
-                let point = new Point(
-                    c * tileset.getTileSize(),
-                    r * tileset.getTileSize()
-                );
-
-                tileset.drawTile(ctx, point, num);
-            }
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    // Tilesets
-
-    #tilesets;
-
-    setTilesets(tilesets) {
-        this.#tilesets = tilesets;
-        return this;
-    }
-
-    getTilesets() {
-        return this.#tilesets;
-    }
-
-    getTileset(name) {
-        if (! (name in this.#tilesets)) {
-            throw "no such tileset " + name;
-        }
-
-        return this.#tilesets[name];
+        this.getLayers().forEach(layer => layer.draw(ctx, interp));
     }
 
     // ------------------------------------------------------------------------
@@ -117,28 +75,28 @@ export default class Map extends Drawable {
     }
 
     // ------------------------------------------------------------------------
-    //
+    // Layers
 
-    #tiles;
+    #layers = [];
 
-    setTiles(tiles) {
-        if (! (tiles instanceof Array)) {
+    setLayers(layers) {
+        if (! (layers instanceof Array)) {
             throw "not an Array instance";
         }
 
-        if (tiles.length == 0) {
-            throw "tiles array is empty"
-        }
+        // reset layers
+        this.#layers = [];
 
-        this.#tiles = tiles;
+        layers.forEach(layer => this.addLayer(layer));
         return this;
     }
 
-    getTiles() {
-        return this.#tiles;
+    getLayers() {
+        return this.#layers;
     }
 
-    getTile(col, row) {
-        return this.#tiles[row * this.#cols + col]
+    addLayer(tileset, tiles) {
+        this.#layers.push(new Layer(this, tileset, tiles));
+        return this;
     }
 }

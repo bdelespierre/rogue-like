@@ -1,5 +1,3 @@
-import Loader from '/js/lib/loader.js';
-
 export default class Tileset {
     constructor(name, source, tileSize, cols) {
         this.setName(name)
