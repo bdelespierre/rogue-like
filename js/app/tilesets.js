@@ -1,6 +1,7 @@
-import DungeonTileset from '/js/app/tilesets/dungeon_tileset.js';
-import CharactersTileset from '/js/app/tilesets/characters_tileset.js';
-import CoinTileset from '/js/app/tilesets/coin_tileset.js';
+import DungeonTileset from '/js/app/tilesets/dungeon.js';
+import CharactersTileset from '/js/app/tilesets/characters.js';
+import CoinTileset from '/js/app/tilesets/coin.js';
+import SkullTileset from '/js/app/tilesets/skull.js'
 
 export default {
 
@@ -9,5 +10,7 @@ export default {
     char: new CharactersTileset(),
 
     coin: new CoinTileset(),
+
+    skull: new SkullTileset(),
 
 }
