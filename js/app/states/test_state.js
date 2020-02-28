@@ -1,6 +1,6 @@
 import State from '/js/lib/state.js';
-import TestMap from '/js/maps/test_map.js';
-import Coin from '/js/animations/coin.js';
+import TestMap from '/js/app/maps/test_map.js';
+import Coin from '/js/app/animations/coin.js';
 import Point from '/js/lib/point.js';
 
 export default class TestState extends State {

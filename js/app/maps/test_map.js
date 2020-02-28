@@ -1,5 +1,5 @@
 import Map from '/js/lib/map.js';
-import Tilesets from '/js/maps/tilesets.js';
+import Tilesets from '/js/app/tilesets.js';
 
 export default class TestMap extends Map {
     constructor() {

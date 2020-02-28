@@ -1,5 +1,5 @@
 import Animation from '/js/lib/animation.js';
-import tilesets from '/js/maps/tilesets.js';
+import tilesets from '/js/app/tilesets.js';
 
 export default class CoinAnimation extends Animation {
     constructor() {

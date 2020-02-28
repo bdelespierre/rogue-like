@@ -1,6 +1,6 @@
-import Game      from '/js/lib/game.js';
-import TestState from '/js/states/test_state.js';
-import Tilesets  from '/js/maps/tilesets.js';
+import Game from '/js/lib/game.js';
+import TestState from '/js/app/states/test_state.js';
+import Tilesets from '/js/app/tilesets.js';
 
 Game.create(document.getElementById('game')).load(Tilesets).then(
     () => game.setState(new TestState(game)).run()
