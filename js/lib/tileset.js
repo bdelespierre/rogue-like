@@ -1,3 +1,5 @@
+import Animation from '/js/lib/animation.js';
+
 export default class Tileset {
     constructor(name, source, tileSize, cols) {
         this.setName(name)
@@ -23,6 +25,10 @@ export default class Tileset {
     }
 
     drawTile(ctx, point, num) {
+        if (this.isAnimated(num)) {
+            return this.getAnimation(num).drawTile(ctx, point);
+        }
+
         let img    = this.getImage(),
             size   = this.getTileSize(),
             tsCols = this.getCols();
@@ -31,7 +37,7 @@ export default class Tileset {
             y = Math.floor((num - 1) / tsCols) * size;
 
         if (img === null) {
-            throw `image ${this.getName()} is not loaded`;
+            throw `tileset ${this.getName()} is not loaded`;
         }
 
         ctx.drawImage(
@@ -135,5 +141,37 @@ export default class Tileset {
 
     getCols() {
         return this.#cols;
+    }
+
+    // ------------------------------------------------------------------------
+    // Animated tiles
+
+    #animations = {};
+
+    registerAnimation(tileNum, animationClass) {
+        this.#animations[tileNum] = () => new animationClass;
+        return this;
+    }
+
+    isAnimated(tileNum) {
+        return tileNum in this.#animations;
+    }
+
+    getAnimation(tileNum) {
+        if (this.#animations[tileNum] instanceof Function) {
+            this.#animations[tileNum] = this.#animations[tileNum]();
+        }
+
+        return this.#animations[tileNum];
+    }
+
+    updateAnimations(delta) {
+        for (let tileNum in this.#animations) {
+            if (this.#animations[tileNum] instanceof Animation) {
+                this.#animations[tileNum].update(delta);
+            }
+        }
+
+        return this;
     }
 }

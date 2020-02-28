@@ -11,7 +11,6 @@ export default class Config extends Map {
     }
 }
 
-//
 // @see https://gist.github.com/penguinboy/762197#gistcomment-2083577
 function flatten(object, separator = '.') {
     return Object.assign({}, ...function _flatten(child, path = []) {

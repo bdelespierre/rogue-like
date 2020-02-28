@@ -16,6 +16,13 @@ export default class Map extends Drawable {
         }
     }
 
+    update(delta) {
+        // update the map's tilesets so they can update their animations
+        this.getLayers().forEach(
+            layer => layer.getTileset().updateAnimations(delta)
+        );
+    }
+
     draw(ctx, interp) {
         this.getLayers().forEach(layer => layer.draw(ctx, interp));
     }

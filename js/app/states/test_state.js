@@ -10,18 +10,15 @@ export default class TestState extends State {
         super(game);
 
         this.map = new TestMap();
-        this.animation = new Coin();
 
         game.getCanvas().addItem(this.map);
     }
 
     update(delta) {
-        this.animation.update(delta);
+        this.map.update(delta);
     }
 
     draw(interp) {
         this.getGame().getCanvas().clear().draw(interp);
-
-        this.animation.drawTile(this.getGame().getCanvas().getContext(), new Point(64, 64));
     }
 }
