@@ -102,6 +102,10 @@ export default class Map extends Drawable {
         return this.#layers;
     }
 
+    getLayer(layer) {
+        return layer in this.#layers ? this.#layers[layer] : null;
+    }
+
     addLayer(tileset, tiles) {
         this.#layers.push(new Layer(this, tileset, tiles));
         return this;

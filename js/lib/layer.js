@@ -92,6 +92,11 @@ export default class Layer extends Drawable {
         return this.#tiles;
     }
 
+    setTile(col, row, value) {
+        this.#tiles[row * this.getMap().getCols() + col] = value;
+        return this;
+    }
+
     getTile(col, row) {
         return this.#tiles[row * this.getMap().getCols() + col]
     }
