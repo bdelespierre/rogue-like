@@ -3,7 +3,6 @@ import State from '/js/lib/state.js';
 import Player from '/js/lib/player.js';
 import Config from '/js/lib/config.js';
 import Canvas from '/js/lib/canvas.js';
-import Countdown from '/js/lib/countdown.js';
 
 export default class Game {
     constructor(canvasElement, configObject) {
@@ -56,7 +55,7 @@ export default class Game {
     }
 
     update(delta) {
-        this.updateCountdowns(delta).getState().update(delta);
+        this.getState().update(delta);
     }
 
     draw(interp) {
@@ -155,21 +154,5 @@ export default class Game {
 
     getCanvas() {
         return this.#canvas;
-    }
-
-    // ------------------------------------------------------------------------
-    // Time Utils
-
-    #countdowns = [];
-
-    updateCountdowns(delta) {
-        this.#countdowns.forEach(countdown => countdown.update(delta));
-        this.#countdowns = this.#countdowns.filter(countdown => ! countdown.isOver());
-        return this;
-    }
-
-    after(delay, fn) {
-        this.#countdowns.push(new Countdown(delay, fn));
-        return this;
     }
 }

@@ -20,15 +20,14 @@ export default class TestState extends State {
                 y = Utils.randInt(0, this.map.getRows());
 
             this.map.getLayer(1).setTile(x, y, Tilesets.dungeon.coin);
-            this.getGame().after(500, addCoin);
         };
 
-        addCoin();
+        this.after(500, addCoin, Infinity);
     }
 
     update(delta) {
+        super.update(delta);
         this.map.update(delta);
-
     }
 
     draw(interp) {
