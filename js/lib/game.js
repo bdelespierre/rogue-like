@@ -12,7 +12,7 @@ export default class Game {
             .setCanvas(new Canvas(canvasElement));
 
         // useful for debugging
-        window.game = this;
+        //window.game = this;
 
         // dummy state
         this.setState(new State(this));

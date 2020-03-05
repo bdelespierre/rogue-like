@@ -1,3 +1,5 @@
+import TmxParser from '/js/lib/tmx.js';
+
 export default class Loader {
     #images = {};
 
@@ -28,5 +30,17 @@ export default class Loader {
 
     hasImage(key) {
         return key in this.#images;
+    }
+
+    loadTmx(src, fn) {
+        return fetch(src).then(function(response) {
+            if (! response.ok) {
+                throw `unable to fetch ${src}`;
+            }
+
+            return response.text().then(function (xml) {
+                return new TmxParser(xml);
+            });
+        });
     }
 }
