@@ -5,9 +5,14 @@ import Map from '/js/lib/map.js';
 
 Game.create(document.getElementById('game')).load(Tilesets).then(function (game) {
     game.setState(new TestState(game)).run();
-    game.getLoader().loadTmx('/assets/test_map.tmx').then(function (tmx) {
-        tmx.getTilesets();
-    })
+
+    game.getLoader().loadMap('/assets/dungeon.tmx').then(res => console.log(res));
+
+    /*game.getLoader().loadTmx('/assets/dungeon.tmx').then(function (tmx) {
+        tmx.getTilesets().then(function (ts) {
+            console.log(ts);
+        });
+    });*/
 });
 
 document.getElementById('pause').addEventListener('click', function() {
