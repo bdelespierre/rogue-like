@@ -32,7 +32,7 @@ export default class TsxParser extends DOMParser {
             image = root.querySelector('image');
 
         return {
-            type: "image",
+            type:       "image",
             name:       root.getAttribute('name'),
             tilewidth:  root.getAttribute('tilewidth'),
             tileheight: root.getAttribute('tileheight'),

@@ -61,15 +61,15 @@ export default class TmxParser extends DOMParser {
 
             if (node.hasAttribute('source')) {
                 tilesets.push({
-                    type: "tsx",
+                    type:     "tsx",
                     firstgid: node.getAttribute('firstgid'),
                     source:   node.getAttribute('source'),
-                })
+                });
             } else {
                 let image = node.querySelector('image');
 
                 tilesets.push({
-                    type: "image",
+                    type:       "image",
                     firstgid:   node.getAttribute('firstgid'),
                     name:       node.getAttribute('name'),
                     tilewidth:  node.getAttribute('tilewidth'),
@@ -81,7 +81,7 @@ export default class TmxParser extends DOMParser {
                         width:  image.getAttribute('width'),
                         height: image.getAttribute('height'),
                     }
-                })
+                });
             }
         }
 
@@ -100,9 +100,9 @@ export default class TmxParser extends DOMParser {
                 throw "unable to parse encodings other than CSV";
             }
 
-            layer.push({
-                tiles: data.innerText.split(',').map(num => parseInt(num)),
-            });
+            layers.push(data.textContent.split(',').map(num => parseInt(num)));
         }
+
+        return layers;
     }
 }

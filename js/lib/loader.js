@@ -4,96 +4,114 @@ import Map from '/js/lib/map.js';
 import Tileset from '/js/lib/tileset.js';
 
 export default class Loader {
-    #images = {};
-
-    loadImage(key, src, fn) {
-        let img = new Image();
-
-        let d = new Promise(function(resolve, reject) {
-            img.onload = function() {
-                this.#images[key] = img;
-                resolve(img);
-                if (fn !== undefined) {
-                    fn(img);
-                }
-            }.bind(this);
-
-            img.onerror = function() {
-                reject('Could not load image: ' + src);
-            };
-        }.bind(this));
-
-        img.src = src;
-        return d;
-    }
-
-    getImage(key) {
-        return this.hasImage(key) ? this.#images[key] : null;
-    }
-
-    hasImage(key) {
-        return key in this.#images;
-    }
 
     // ------------------------------------------------------------------------
     // maps
 
-    async loadMap(src) {
+    #maps = {};
+
+    async loadMap(name, src) {
         let tmx = await this.loadTmx(src),
-            def = tmx.getMapDefinition(),
-            map = new Map(def.cols, def.rows, def.tileSize);
+            definition = tmx.getMapDefinition(),
+            map = new Map(definition.cols, definition.rows, definition.tileSize);
 
         // paths (source) in .tmx & .tsx files are relative to the
-        // file itself so we need to prepen a prefix to fetch the
+        // file itself so we need to prepend a prefix to fetch the
         // images and the .tsx files.
-        let prefix = src.substr(0, src.lastIndexOf('/'));
+        let path = src.substr(0, src.lastIndexOf('/'));
 
-        let tilesetDefs = tmx.getTilesetsDefinition(),
-            tilesets = [];
+        await Promise.all(tmx.getTilesetsDefinition().map(async ts => {
+            let firstgid = ts.firstgid;
 
-        for (let key in tilesetDefs) {
-            let def = tilesetDefs[key];
-
-            if (def.type == "tsx") {
-                let tsx = await this.loadTsx(`${prefix}/${def.source}`);
-                def = tsx.getTilesetDefinition();
+            if (ts.type == "tsx") {
+                let tsx = await this.loadTsx(`${path}/${ts.source}`);
+                ts = tsx.getTilesetDefinition();
             }
 
-            tilesets.push(new Tileset(
-                def.name,
-                `${prefix}/${def.image.source}`,
-                def.tilewidth,
-                def.columns
-            ));
-        }
+            await this.loadTileset(ts.name, `${path}/${ts.image.source}`, ts.tilewidth, ts.columns);
+            map.addTileset(firstgid, this.getTileset(ts.name));
+        }));
 
-        let layerDefs = tmx.getLayersDefinition(),
-            layers = [];
+        tmx.getLayersDefinition().forEach(layer => {
+            map.addLayer(layer);
+        });
+
+        return this.#maps[name] = map;
     }
 
+    getMap(name) {
+        return this.hasMap(name) ? this.#maps[name] : null;
+    }
+
+    hasMap(name) {
+        return name in this.#maps;
+    }
 
     // ------------------------------------------------------------------------
-    // Tile .tmx & .tsx
+    // tilesets
 
-    loadTmx(src) {
-        return fetch(src).then(function(response) {
+    #tilesets = {};
+
+    async loadTileset(name, src, tileSize, cols) {
+        let image = await this.loadImage(src);
+
+        return this.setTileset(name, new Tileset(image, tileSize, cols));
+    }
+
+    setTileset(name, tileset) {
+        if (! (tileset instanceof Tileset)) {
+            throw "not a Tileset instance";
+        }
+
+        this.#tilesets[name] = tileset;
+        return this;
+    }
+
+    getTileset(name) {
+        return this.hasTileset(name) ? this.#tilesets[name] : null;
+    }
+
+    hasTileset(name) {
+        return name in this.#tilesets;
+    }
+
+    // ------------------------------------------------------------------------
+    // file loaders
+
+    loadImage(src) {
+        return fetch(src).then(response => {
             if (! response.ok) {
                 throw `unable to fetch ${src}`;
             }
 
-            return response.text().then(function (xml) {
+            return response.blob();
+        }).then(blob => {
+            let image = new Image();
+            image.src = URL.createObjectURL(blob);
+
+            return image;
+        });
+    }
+
+    loadTmx(src) {
+        return fetch(src).then(response => {
+            if (! response.ok) {
+                throw `unable to fetch ${src}`;
+            }
+
+            return response.text().then(xml => {
                 return new TmxParser(xml);
             });
         });
     }
 
     loadTsx(src) {
-        return fetch(src).then(function (response) {
+        return fetch(src).then(response => {
             if (! response.ok) {
                 throw `unable to fetch ${src}`;
             }
 
-            return response.text().then(function (xml) {
+            return response.text().then(xml => {
                 return new TsxParser(xml);
             });
         });

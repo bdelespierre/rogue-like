@@ -1,27 +1,10 @@
 import Animation from '/js/lib/animation.js';
 
 export default class Tileset {
-    constructor(name, source, tileSize, cols) {
-        this.setName(name)
-            .setSource(source)
+    constructor(image, tileSize, cols) {
+        this.setImage(image)
             .setTileSize(tileSize)
             .setCols(cols);
-    }
-
-    load(loader) {
-        let name = this.getName();
-
-        if (loader.hasImage(name)) {
-            let img = loader.getImage(name);
-            this.setImage(img);
-            return Promise.resolve(img);
-        }
-
-        return loader.loadImage(
-            name,
-            this.getSource(),
-            img => this.setImage(img)
-        );
     }
 
     drawTile(ctx, point, num) {
@@ -35,10 +18,6 @@ export default class Tileset {
 
         let x = ((num - 1) % tsCols) * size,
             y = Math.floor((num - 1) / tsCols) * size;
-
-        if (img === null) {
-            throw `tileset ${this.getName()} is not loaded`;
-        }
 
         ctx.drawImage(
             img,                 // image
@@ -60,7 +39,7 @@ export default class Tileset {
 
     setImage(image) {
         if (! (image instanceof Image)) {
-            throw "not a Image instance";
+            throw "not an Image instance";
         }
 
         this.#image = image;
@@ -87,24 +66,6 @@ export default class Tileset {
 
     getName() {
         return this.#name;
-    }
-
-    // ------------------------------------------------------------------------
-    // Name
-
-    #source;
-
-    setSource(source) {
-        if (! source) {
-            throw "invalid source";
-        }
-
-        this.#source = source;
-        return this;
-    }
-
-    getSource() {
-        return this.#source;
     }
 
     // ------------------------------------------------------------------------
@@ -150,6 +111,15 @@ export default class Tileset {
 
     registerAnimation(tileNum, animationClass) {
         this.#animations[tileNum] = () => new animationClass;
+        return this;
+    }
+
+    animate(tileNum, animation) {
+        if (! (animation instanceof Animation)) {
+            throw "not an Animation instance";
+        }
+
+        this.#animations[tileNum] = animation;
         return this;
     }
 

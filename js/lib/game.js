@@ -5,31 +5,27 @@ import Config from '/js/lib/config.js';
 import Canvas from '/js/lib/canvas.js';
 
 export default class Game {
-    constructor(canvasElement, configObject) {
+    constructor(canvas, config) {
         this.setLoader(new Loader())
             .setPlayer(new Player())
-            .setConfig(new Config(configObject))
-            .setCanvas(new Canvas(canvasElement));
-
-        // useful for debugging
-        //window.game = this;
+            .setConfig(new Config(config))
+            .setCanvas(new Canvas(canvas));
 
         // dummy state
         this.setState(new State(this));
     }
 
-    static create(canvasElement, configObject) {
-        return new this(canvasElement, configObject);
-    }
-
-    async load(loadables) {
-        let loading = [];
-
-        for (let key in loadables) {
-            loading.push(loadables[key].load(this.getLoader()));
+    static create(canvas, config) {
+        if (typeof canvas == 'string') {
+            canvas = window.document.querySelector(canvas);
         }
 
-        await Promise.all(loading);
+        return new this(canvas, config);
+    }
+
+    async load(callback) {
+        await Promise.all(callback.call(this, this.getLoader()));
+
         return this;
     }
 
