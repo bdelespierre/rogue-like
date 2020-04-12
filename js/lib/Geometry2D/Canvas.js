@@ -1,4 +1,4 @@
-import Drawable from '/js/lib/drawable.js';
+import Drawable from '/js/lib/Geometry2D/Drawable.js';
 
 export default class Canvas {
     constructor(element) {

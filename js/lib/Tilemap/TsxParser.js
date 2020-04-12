@@ -1,5 +1,3 @@
-import Tileset from '/js/lib/tileset.js';
-
 export default class TsxParser extends DOMParser {
     constructor(xml) {
         super();

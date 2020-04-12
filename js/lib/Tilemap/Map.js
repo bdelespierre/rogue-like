@@ -1,7 +1,7 @@
-import Box from '/js/lib/box.js';
-import Drawable from '/js/lib/drawable.js';
-import Point from '/js/lib/point.js';
-import Tileset from '/js/lib/tileset.js';
+import Box from '/js/lib/Geometry2D/Box.js';
+import Drawable from '/js/lib/Geometry2D/Drawable.js';
+import Point from '/js/lib/Geometry2D/Point.js';
+import Tileset from '/js/lib/Tilemap/Tileset.js';
 
 export default class Map extends Drawable {
     constructor(cols, rows, tileSize, camera) {

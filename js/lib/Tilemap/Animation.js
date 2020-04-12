@@ -1,5 +1,4 @@
-import Drawable from '/js/lib/drawable.js';
-import Tileset from '/js/lib/tileset.js';
+import Tileset from '/js/lib/Tilemap/Tileset.js';
 
 export default class Animation {
     constructor(tileset, reps, frames) {

@@ -1,5 +1,5 @@
-import Game from '/js/lib/game.js';
-import Countdown from '/js/lib/countdown.js';
+import Countdown from '/js/lib/Game/Countdown.js';
+import Game from '/js/lib/Game/Game.js';
 
 export default class State {
     constructor(game) {

@@ -1,4 +1,4 @@
-import Inputs from '/js/lib/inputs.js';
+import Inputs from '/js/lib/Game/Inputs.js';
 
 export default class Player {
     constructor() {

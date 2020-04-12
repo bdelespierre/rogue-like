@@ -1,7 +1,7 @@
-import TmxParser from '/js/lib/tmx.js';
-import TsxParser from '/js/lib/tsx.js';
-import Map from '/js/lib/map.js';
-import Tileset from '/js/lib/tileset.js';
+import Map from '/js/lib/Tilemap/Map.js';
+import Tileset from '/js/lib/Tilemap/Tileset.js';
+import TmxParser from '/js/lib/Tilemap/TmxParser.js';
+import TsxParser from '/js/lib/Tilemap/TsxParser.js';
 
 export default class Loader {
 

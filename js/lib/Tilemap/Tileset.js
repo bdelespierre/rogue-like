@@ -1,4 +1,4 @@
-import Animation from '/js/lib/animation.js';
+import Animation from '/js/lib/Tilemap/Animation.js';
 
 export default class Tileset {
     debug=true;

@@ -1,4 +1,4 @@
-import Point from '/js/lib/point.js';
+import Point from '/js/lib/Geometry2D/Point.js';
 
 export default class Box {
     constructor(position, width, height) {

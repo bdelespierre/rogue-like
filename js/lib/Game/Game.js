@@ -1,8 +1,8 @@
-import Canvas from '/js/lib/canvas.js';
-import Config from '/js/lib/config.js';
-import Loader from '/js/lib/loader.js';
-import Player from '/js/lib/player.js';
-import State from '/js/lib/state.js';
+import Canvas from '/js/lib/Geometry2D/Canvas.js';
+import Config from '/js/lib/Game/Config.js';
+import Loader from '/js/lib/Game/Loader.js';
+import Player from '/js/lib/Game/Player.js';
+import State from '/js/lib/Game/State.js';
 
 export default class Game {
     constructor(canvas, config) {

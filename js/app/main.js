@@ -1,7 +1,7 @@
-import Animation from '/js/lib/animation.js';
-import Box from "/js/lib/box.js";
-import Game from '/js/lib/game.js';
-import State from '/js/lib/state.js';
+import Animation from '/js/lib/Tilemap/Animation.js';
+import Box from "/js/lib/Geometry2D/Box.js";
+import Game from '/js/lib/Game/Game.js';
+import State from '/js/lib/Game/State.js';
 
 Game.create('#game').load(loader => [
     loader.loadMap('dungeon', 'assets/dungeon.tmx'),
