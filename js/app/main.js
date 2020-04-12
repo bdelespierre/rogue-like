@@ -48,6 +48,26 @@ Game.create('#game').load(loader => [
             ctx.scale(3, 3);
             ctx.imageSmoothingEnabled = false;
         }
+        begin(timestamp, delta) {
+            let inputs = this.getGame().getPlayer().getInputs(),
+                scrollSpeed = 2.5;
+
+            if (inputs.isDown('ArrowUp')) {
+                this.camera.getPosition().translateY(-scrollSpeed);
+            }
+
+            if (inputs.isDown('ArrowDown')) {
+                this.camera.getPosition().translateY(scrollSpeed);
+            }
+
+            if (inputs.isDown('ArrowLeft')) {
+                this.camera.getPosition().translateX(-scrollSpeed);
+            }
+
+            if (inputs.isDown('ArrowRight')) {
+                this.camera.getPosition().translateX(scrollSpeed);
+            }
+        }
         update(delta) {
             super.update(delta);
             this.map.update(delta);

@@ -28,6 +28,11 @@ export default class Point {
         return this.#x;
     }
 
+    translateX(offset) {
+        this.#x += offset;
+        return this;
+    }
+
     get x() {
         return this.getX();
     }
@@ -48,6 +53,11 @@ export default class Point {
 
     getY() {
         return this.#y;
+    }
+
+    translateY(offset) {
+        this.#y += offset;
+        return this;
     }
 
     get y() {
