@@ -1,15 +1,17 @@
 import Animation from '/js/lib/animation.js';
 
 export default class Tileset {
+    debug=true;
+
     constructor(image, tileSize, cols) {
         this.setImage(image)
             .setTileSize(tileSize)
             .setCols(cols);
     }
 
-    drawTile(ctx, point, num) {
+    drawTile(ctx, pos, num) {
         if (this.isAnimated(num)) {
-            return this.getAnimation(num).drawTile(ctx, point);
+            return this.getAnimation(num).drawTile(ctx, pos);
         }
 
         let img    = this.getImage(),
@@ -20,16 +22,21 @@ export default class Tileset {
             y = Math.floor((num - 1) / tsCols) * size;
 
         ctx.drawImage(
-            img,                 // image
-            x,                   // source x
-            y,                   // source y
-            size,                // source width
-            size,                // source height
-            point.getX(),        // target x
-            point.getY(),        // target y
-            size,                // target width
-            size                 // target height
+            img,   // image
+            x,     // source x
+            y,     // source y
+            size,  // source width
+            size,  // source height
+            pos.x, // target x
+            pos.y, // target y
+            size,  // target width
+            size   // target height
         );
+
+        if (this.debug) {
+            ctx.strokeStyle = 'blue';
+            ctx.strokeRect(pos.x, pos.y, size, size);
+        }
     }
 
     // ------------------------------------------------------------------------

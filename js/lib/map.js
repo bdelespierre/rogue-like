@@ -1,14 +1,16 @@
+import Box from '/js/lib/box.js';
 import Drawable from '/js/lib/drawable.js';
-import Tileset from '/js/lib/tileset.js';
 import Point from '/js/lib/point.js';
+import Tileset from '/js/lib/tileset.js';
 
 export default class Map extends Drawable {
-    constructor(cols, rows, tileSize) {
+    constructor(cols, rows, tileSize, camera) {
         super();
 
         this.setCols(cols)
             .setRows(rows)
-            .setTileSize(tileSize);
+            .setTileSize(tileSize)
+            .setCamera(camera)
     }
 
     update(delta) {
@@ -18,8 +20,17 @@ export default class Map extends Drawable {
     }
 
     draw(ctx, interp) {
-        for (let c = 0; c < this.getCols(); c++) {
-            for (let r = 0; r < this.getRows(); r++) {
+        let camera   = this.getCamera(),
+            tsize    = this.getTileSize(),
+            startCol = Math.floor(camera.x / tsize),
+            startRow = Math.floor(camera.y / tsize),
+            endCol   = startCol + (camera.width / tsize),
+            endRow   = startRow + (camera.height / tsize),
+            offsetX  = -camera.x + startCol * tsize,
+            offsetY  = -camera.y + startRow * tsize;
+
+        for (let c = startCol; c <= endCol; c++) {
+            for (let r = startRow; r <= endRow; r++) {
                 for (let l = 0; l < this.getLayers(); l++) {
                     let num = this.getTile(l, c, r);
 
@@ -30,15 +41,21 @@ export default class Map extends Drawable {
 
                     let tileset = this.getTilesetForTile(num);
 
-                    let point = new Point(
-                        c * tileset.getTileSize(),
-                        r * tileset.getTileSize()
-                    );
-
-                    tileset.drawTile(ctx, point, this.translateTileToTilesetNum(num));
+                    tileset.drawTile(ctx, new Point(
+                        (c - startCol) * tsize + offsetX,
+                        (r - startRow) * tsize + offsetY
+                    ), this.translateTileToTilesetNum(num));
                 }
             }
         }
+    }
+
+    getWidth() {
+        return this.getCols() * this.getTileSize();
+    }
+
+    getHeight() {
+        return this.getRows() * this.getTileSize();
     }
 
     // ------------------------------------------------------------------------
@@ -166,127 +183,32 @@ export default class Map extends Drawable {
             throw "no such layer" + layer;
         }
 
-        return this.#layers[layer][row * this.getCols() + col];
-    }
-
-    // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-    /*
-    constructor(cols, rows, tileSize) {
-        super();
-
-        this.setCols(cols)
-            .setRows(rows)
-            .setTileSize(tileSize)
-            .setTilesets(new window.Map);
-    }
-
-    *load(loader) {
-        for (let key in this.getTilesets()) {
-            yield this.getTileset(key).load(loader);
+        if (col < 0 || col >= this.getCols() || row < 0 || row >= this.getRows()) {
+            return 0;
         }
-    }
 
-    update(delta) {
-        // update the map's tilesets so they can update their animations
-        this.getLayers().forEach(
-            layer => layer.getTileset().updateAnimations(delta)
-        );
-    }
-
-    draw(ctx, interp) {
-        for (let c = 0; c < this.getCols(); c++) {
-            for (let r = 0; r < this.getRows(); r++) {
-                this.getLayers().forEach(function (layer) {
-                    let num = layer.getTile(c, r);
-
-                    // 0 => empty tile
-                    if (num === 0) {
-                        continue;
-                    }
-
-                    let point = new Point(
-                        c * tileset.getTileSize(),
-                        r * tileset.getTileSize()
-                    );
-
-                    this.getTilesetForTile(num).drawTile(ctx, point, num);
-                })
-            }
-        }
+        return this.#layers[layer][row * this.getCols() + col] ?? 0;
     }
 
     // ------------------------------------------------------------------------
-    // Tilesets
+    // Camera
 
-    #tilesets;
+    #camera;
 
-    setTilesets(tilesets) {
-        if (tilesets instanceof Array) {
-            tilesets = new window.Map(tilesets);
+    setCamera(camera) {
+        if (camera == undefined) {
+            camera = new Box([0, 0], this.getWidth(), this.getHeight());
         }
 
-        if (! (tilesets instanceof window.Map)) {
-            throw "not an Array instance";
+        if (! (camera instanceof Box)) {
+            throw "not a Box instance";
         }
 
-        this.#tilesets = tilesets;
+        this.#camera = camera;
         return this;
     }
 
-    getTilesets() {
-        return this.#tilesets;
+    getCamera() {
+        return this.#camera;
     }
-
-    addTileset(firstgid, tileset) {
-        if (! (tileset instanceof Tileset)) {
-            throw "not a Tileset instance";
-        }
-
-        this.#tileset.set(tileset, firstgid);
-        return this;
-    }
-
-    getTilesetForTile(num) {
-        let keys = this.#tilesets.keys;
-
-        for (let i in keys) {
-            if (num < this.#tilesets.get(keys[i])) {
-                return keys[i];
-            }
-        }
-
-        return null;
-    }
-
-    // ------------------------------------------------------------------------
-    // Layers
-
-    #layers = [];
-
-    setLayers(layers) {
-        if (! (layers instanceof Array)) {
-            throw "not an Array instance";
-        }
-
-        // reset layers
-        this.#layers = [];
-
-        layers.forEach(layer => this.addLayer(layer));
-        return this;
-    }
-
-    getLayers() {
-        return this.#layers;
-    }
-
-    getLayer(layer) {
-        return layer in this.#layers ? this.#layers[layer] : null;
-    }
-
-    addLayer(tileset, tiles) {
-        this.#layers.push(new Layer(this, tileset, tiles));
-        return this;
-    }
-    */
 }

@@ -1,8 +1,8 @@
-import Loader from '/js/lib/loader.js';
-import State from '/js/lib/state.js';
-import Player from '/js/lib/player.js';
-import Config from '/js/lib/config.js';
 import Canvas from '/js/lib/canvas.js';
+import Config from '/js/lib/config.js';
+import Loader from '/js/lib/loader.js';
+import Player from '/js/lib/player.js';
+import State from '/js/lib/state.js';
 
 export default class Game {
     constructor(canvas, config) {
@@ -150,5 +150,23 @@ export default class Game {
 
     getCanvas() {
         return this.#canvas;
+    }
+
+    // ------------------------------------------------------------------------
+    // Camera
+
+    #camera;
+
+    setCamera(camera) {
+        if (! (camera instanceof Camera)) {
+            throw "not a Camera instance";
+        }
+
+        this.#camera = camera;
+        return this;
+    }
+
+    getCamera() {
+        return this.#camera;
     }
 }

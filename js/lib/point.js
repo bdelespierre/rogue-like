@@ -4,8 +4,8 @@ export default class Point {
     }
 
     static distance(a, b) {
-        const dx = a.getX() - b.getX();
-        const dy = a.getY() - b.getY();
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
 
         return Math.hypot(dx, dy);
     }
@@ -28,6 +28,14 @@ export default class Point {
         return this.#x;
     }
 
+    get x() {
+        return this.getX();
+    }
+
+    set x(x) {
+        this.setX(x);
+    }
+
     // ------------------------------------------------------------------------
     // Y
 
@@ -40,5 +48,13 @@ export default class Point {
 
     getY() {
         return this.#y;
+    }
+
+    get y() {
+        return this.getY();
+    }
+
+    set y(y) {
+        this.setY(y);
     }
 }

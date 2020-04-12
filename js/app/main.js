@@ -1,5 +1,6 @@
-import Game from '/js/lib/game.js';
 import Animation from '/js/lib/animation.js';
+import Box from "/js/lib/box.js";
+import Game from '/js/lib/game.js';
 import State from '/js/lib/state.js';
 
 Game.create('#game').load(loader => [
@@ -30,8 +31,22 @@ Game.create('#game').load(loader => [
     game.setState(new (class extends State {
         constructor(game) {
             super(game);
+
+            let canvas = game.getCanvas();
+
             this.map = game.getLoader().getMap('dungeon');
-            game.getCanvas().addItem(this.map);
+            canvas.addItem(this.map);
+
+            this.camera = new Box(
+                [32, 32],
+                canvas.getWidth(),
+                canvas.getHeight()
+            );
+            this.map.setCamera(this.camera);
+
+            let ctx = canvas.getContext();
+            ctx.scale(3, 3);
+            ctx.imageSmoothingEnabled = false;
         }
         update(delta) {
             super.update(delta);

@@ -1,38 +1,54 @@
 import Drawable from '/js/lib/drawable.js';
 
 export default class Canvas {
-    #elem;
-    #ctx;
+    constructor(element) {
+        this.setElement(element);
+    }
 
-    constructor(elem) {
-        if (! (elem instanceof HTMLCanvasElement)) {
+    // ------------------------------------------------------------------------
+    // Canvas Element
+
+    #element;
+    #context;
+
+    setElement(element) {
+        if (! (element instanceof HTMLCanvasElement)) {
             throw new "not an HTMLCanvasElement intance";
         }
 
-        this.#elem = elem;
-        this.#ctx  = elem.getContext('2d');
+        this.#element = element;
+        this.#context  = element.getContext('2d');
+        return this;
     }
 
     getElement() {
-        return this.#elem;
+        return this.#element;
     }
 
     getContext() {
-        return this.#ctx;
+        return this.#context;
     }
 
     getWidth() {
-        return this.#elem.width;
+        return this.#element.width;
     }
 
     getHeight() {
-        return this.#elem.height;
+        return this.#element.height;
     }
 
     // ------------------------------------------------------------------------
     // Background
 
     #background;
+
+    getBackground() {
+        return this.#background;
+    }
+
+    hasBackground() {
+        return this.#background != undefined;
+    }
 
     setBackground(item) {
         if (! (item instanceof Drawable)) {
@@ -43,14 +59,14 @@ export default class Canvas {
         return this;
     }
 
-    getBackground() {
-        return this.#background;
-    }
-
     // ------------------------------------------------------------------------
     // Items
 
     #items = [];
+
+    getItems() {
+        return this.#items;
+    }
 
     hasItem(item) {
         return this.#items.indexOf(item) !== -1;
@@ -88,18 +104,18 @@ export default class Canvas {
     // Drawing
 
     clear() {
-        this.#ctx.clearRect(0, 0, this.getWidth(), this.getHeight());
+        this.getContext().clearRect(0, 0, this.getWidth(), this.getHeight());
 
         return this;
     }
 
     draw(interp) {
-        if (this.#background instanceof Drawable) {
-            this.#background.draw(this.#ctx, interp);
+        if (this.hasBackground()) {
+            this.getBackground().draw(this.getContext(), interp);
         }
 
-        this.#items.forEach(
-            item => item.draw(this.#ctx, interp)
+        this.getItems().forEach(
+            item => item.draw(this.getContext(), interp)
         );
 
         return this;

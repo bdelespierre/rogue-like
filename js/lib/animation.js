@@ -27,8 +27,8 @@ export default class Animation {
         }
     }
 
-    drawTile(ctx, point) {
-        this.getTileset().drawTile(ctx, point, this.getCurrentFrame().num);
+    drawTile(ctx, pos) {
+        this.getTileset().drawTile(ctx, pos, this.getCurrentFrame().num);
     }
 
     // ------------------------------------------------------------------------
@@ -126,7 +126,7 @@ export default class Animation {
             throw "empty frames";
         }
 
-        if (! frames.every(frame => this.constructor.isFrameValid(frame))) {
+        if (! frames.every(frame => this.isFrameValid(frame))) {
             throw "invalid frames";
         }
 
@@ -139,11 +139,7 @@ export default class Animation {
     }
 
     getFrame(num) {
-        if (num < 0) {
-            throw "num cannot be negative";
-        }
-
-        if (num >= this.getFrames().length) {
+        if (num < 0 || num >= this.getFrames().length) {
             throw "no such frame " + num;
         }
 
@@ -154,7 +150,7 @@ export default class Animation {
         return this.getFrames().reduce((carry, frame) => carry + frame.delay);
     }
 
-    static isFrameValid(frame) {
+    isFrameValid(frame) {
         return frame.num   !== undefined && frame.num   >= 0
             && frame.delay !== undefined && frame.delay >= 0;
     }
