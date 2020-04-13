@@ -44,15 +44,9 @@ export default class Loader {
         let path = src.substr(0, src.lastIndexOf('/'));
 
         await Promise.all(tmx.getTilesetsDefinition().map(async ts => {
-            let firstgid = ts.firstgid;
-
-            if (ts.type == "tsx") {
-                let tsx = await this.loadTsx(`${path}/${ts.source}`);
-                ts = tsx.getTilesetDefinition();
-            }
-
-            let tileset = await this.loadTilesetFromImage(ts.name, `${path}/${ts.image.source}`, ts.tilewidth, ts.columns);
-            map.addTileset(firstgid, tileset);
+            map.addTileset(ts.firstgid, ts.type == "tsx"
+                ? await this.loadTilesetFromTsx(`${path}/${ts.source}`)
+                : await this.loadTilesetFromDefinition(ts, path));
         }));
 
         tmx.getLayersDefinition().forEach(layer => {
@@ -82,6 +76,40 @@ export default class Loader {
 
     #tilesets = {};
 
+    async loadTilesetFromTsx(src) {
+        let tsx  = await this.loadTsx(src),
+            path = src.substr(0, src.lastIndexOf('/'));
+
+        return this.loadTilesetFromDefinition(
+            tsx.getTilesetDefinition(), path
+        );
+    }
+
+    async loadTilesetFromDefinition(ts, path) {
+        let tileset = await this.loadTilesetFromImage(
+            ts.name,
+            `${path}/${ts.image.source}`,
+            ts.tilewidth,
+            ts.columns
+        );
+
+        ts.tiles.forEach(tile => {
+            if (tile.animation != undefined) {
+                let frames = tile.animation.map(frame => ({
+                    num: frame.tileid + 1,
+                    duration: frame.duration,
+                }));
+
+                tileset.animate(
+                    tile.id + 1,
+                    new Animation(tileset, Infinity, frames)
+                );
+            }
+        })
+
+        return tileset;
+    }
+
     async loadTilesetFromImage(name, src, tileSize, cols) {
         if (this.#tilesets[name] != undefined) {
             console.warn(`tileset ${name} already exists`);
@@ -105,46 +133,6 @@ export default class Loader {
 
     hasTileset(name) {
         return name in this.#tilesets;
-    }
-
-    // ------------------------------------------------------------------------
-    // animations
-
-    #animations = {};
-
-    /**
-     * @todo remove this
-     */
-    async loadAnimationFromJson(name, src) {
-        let json = await this.loadJson(src);
-
-        let tileset = await this.loadTilesetFromImage(
-            json.tileset.name,
-            json.tileset.image,
-            json.tileset.tileSize,
-            json.tileset.cols
-        );
-
-        if (json.repeats == "Infinity") {
-            json.repeats = Infinity;
-        }
-
-        this.#animations[name] = new Animation(tileset, json.repeats, json.frames);
-
-        this.getDispatcher().dispatch('loaded.animation', {
-            animation: this.#animations[name],
-            name: name,
-        });
-
-        return this.#animations[name];
-    }
-
-    getAnimation(name) {
-        return this.hasAnimation(name) ? this.#animations[name] : null;
-    }
-
-    hasAnimation(name) {
-        return name in this.#animations;
     }
 
     // ------------------------------------------------------------------------

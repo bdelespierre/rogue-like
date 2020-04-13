@@ -32,15 +32,51 @@ export default class TsxParser extends DOMParser {
         return {
             type:       "image",
             name:       root.getAttribute('name'),
-            tilewidth:  root.getAttribute('tilewidth'),
-            tileheight: root.getAttribute('tileheight'),
-            tilecount:  root.getAttribute('tilecount'),
-            columns:    root.getAttribute('columns'),
+            tilewidth:  parseInt(root.getAttribute('tilewidth')),
+            tileheight: parseInt(root.getAttribute('tileheight')),
+            tilecount:  parseInt(root.getAttribute('tilecount')),
+            columns:    parseInt(root.getAttribute('columns')),
             image: {
                 source: image.getAttribute('source'),
-                width:  image.getAttribute('width'),
-                height: image.getAttribute('height'),
-            }
+                width:  parseInt(image.getAttribute('width')),
+                height: parseInt(image.getAttribute('height')),
+            },
+            tiles: this.getTiles(root),
         };
+    }
+
+    getTiles(root) {
+        let tiles = [],
+            nodes = root.getElementsByTagName('tile');
+
+        for (let i = 0; i < nodes.length; i++) {
+            let node = nodes.item(i),
+                tile = { id: parseInt(node.getAttribute('id')) };
+
+            this.getAnimation(node, tile);
+            tiles.push(tile);
+        }
+
+        return tiles;
+    }
+
+    getAnimation(root, tile) {
+        let animation = root.querySelector('animation');
+
+        if (! animation) {
+            return;
+        }
+
+        let frames = animation.getElementsByTagName('frame');
+        tile.animation = [];
+
+        for (let i = 0; i < frames.length; i++) {
+            let frame = frames.item(i);
+
+            tile.animation.push({
+                tileid: parseInt(frame.getAttribute('tileid')),
+                duration: frame.getAttribute('duration'),
+            });
+        }
     }
 }

@@ -41,7 +41,7 @@ export default class Animation {
     }
 
     getCurrentFrameTimeLeft() {
-        return this.getCurrentFrame().delay - this.#currentFrameTime;
+        return this.getCurrentFrame().duration - this.#currentFrameTime;
     }
 
     incCurrentFrame() {
@@ -146,11 +146,11 @@ export default class Animation {
     }
 
     getAnimationLength() {
-        return this.getFrames().reduce((carry, frame) => carry + frame.delay);
+        return this.getFrames().reduce((carry, frame) => carry + frame.duration);
     }
 
     isFrameValid(frame) {
-        return frame.num   !== undefined && frame.num   >= 0
-            && frame.delay !== undefined && frame.delay >= 0;
+        return frame.num      !== undefined && frame.num      >= 0
+            && frame.duration !== undefined && frame.duration >= 0;
     }
 }

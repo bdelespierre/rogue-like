@@ -24,7 +24,7 @@ Game.create('#game').load(loader => [
             canvas.addItem(this.map);
 
             this.camera = new Box(
-                [32, 32],
+                [0, 0],
                 canvas.getWidth(),
                 canvas.getHeight()
             );
