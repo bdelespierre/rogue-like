@@ -1,9 +1,32 @@
+import Animation from '/js/lib/Tilemap/Animation.js';
+import Dispatcher from '/js/lib/Game/Dispatcher.js';
 import Map from '/js/lib/Tilemap/Map.js';
 import Tileset from '/js/lib/Tilemap/Tileset.js';
 import TmxParser from '/js/lib/Tilemap/TmxParser.js';
 import TsxParser from '/js/lib/Tilemap/TsxParser.js';
 
 export default class Loader {
+    constructor(dispatcher) {
+        this.setDispatcher(dispatcher);
+    }
+
+    // ------------------------------------------------------------------------
+    // dispatcher
+
+    #dispatcher;
+
+    setDispatcher(dispatcher) {
+        if (! (dispatcher instanceof Dispatcher)) {
+            throw "not a Dispatcher instance";
+        }
+
+        this.#dispatcher = dispatcher;
+        return this;
+    }
+
+    getDispatcher() {
+        return this.#dispatcher;
+    }
 
     // ------------------------------------------------------------------------
     // maps
@@ -28,15 +51,22 @@ export default class Loader {
                 ts = tsx.getTilesetDefinition();
             }
 
-            await this.loadTileset(ts.name, `${path}/${ts.image.source}`, ts.tilewidth, ts.columns);
-            map.addTileset(firstgid, this.getTileset(ts.name));
+            let tileset = await this.loadTileset(ts.name, `${path}/${ts.image.source}`, ts.tilewidth, ts.columns);
+            map.addTileset(firstgid, tileset);
         }));
 
         tmx.getLayersDefinition().forEach(layer => {
             map.addLayer(layer);
         });
 
-        return this.#maps[name] = map;
+        this.#maps[name] = map;
+
+        this.getDispatcher().dispatch('loaded.map', {
+            map: this.#maps[name],
+            name: name,
+        });
+
+        return this.#maps[name];
     }
 
     getMap(name) {
@@ -53,18 +83,20 @@ export default class Loader {
     #tilesets = {};
 
     async loadTileset(name, src, tileSize, cols) {
-        let image = await this.loadImage(src);
-
-        return this.setTileset(name, new Tileset(image, tileSize, cols));
-    }
-
-    setTileset(name, tileset) {
-        if (! (tileset instanceof Tileset)) {
-            throw "not a Tileset instance";
+        if (this.#tilesets[name] != undefined) {
+            console.warn(`tileset ${name} already exists`);
+            return this.#tilesets[name];
         }
 
-        this.#tilesets[name] = tileset;
-        return this;
+        let image = await this.loadImage(src);
+        this.#tilesets[name] = new Tileset(image, tileSize, cols);
+
+        this.getDispatcher().dispatch('loaded.tileset', {
+            tileset: this.#tilesets[name],
+            name: name,
+        });
+
+        return this.#tilesets[name];
     }
 
     getTileset(name) {
@@ -73,6 +105,43 @@ export default class Loader {
 
     hasTileset(name) {
         return name in this.#tilesets;
+    }
+
+    // ------------------------------------------------------------------------
+    // animations
+
+    #animations = {};
+
+    async loadAnimation(name, src) {
+        let json = await this.loadJson(src);
+
+        let tileset = await this.loadTileset(
+            json.tileset.name,
+            json.tileset.image,
+            json.tileset.tileSize,
+            json.tileset.cols
+        );
+
+        if (json.repeats == "Infinity") {
+            json.repeats = Infinity;
+        }
+
+        this.#animations[name] = new Animation(tileset, json.repeats, json.frames);
+
+        this.getDispatcher().dispatch('loaded.animation', {
+            animation: this.#animations[name],
+            name: name,
+        });
+
+        return this.#animations[name];
+    }
+
+    getAnimation(name) {
+        return this.hasAnimation(name) ? this.#animations[name] : null;
+    }
+
+    hasAnimation(name) {
+        return name in this.#animations;
     }
 
     // ------------------------------------------------------------------------
@@ -115,5 +184,15 @@ export default class Loader {
                 return new TsxParser(xml);
             });
         });
+    }
+
+    loadJson(src) {
+        return fetch(src).then(response => {
+            if (! response.ok) {
+                throw `unable to fetch ${src}`;
+            }
+
+            return response.json();
+        })
     }
 }

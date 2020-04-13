@@ -1,15 +1,17 @@
 import Canvas from '/js/lib/Geometry2D/Canvas.js';
 import Config from '/js/lib/Game/Config.js';
+import Dispatcher from '/js/lib/Game/Dispatcher.js';
 import Loader from '/js/lib/Game/Loader.js';
 import Player from '/js/lib/Game/Player.js';
 import State from '/js/lib/Game/State.js';
 
 export default class Game {
     constructor(canvas, config) {
-        this.setLoader(new Loader())
+        this.setDispatcher(new Dispatcher())
+            .setLoader(new Loader(this.getDispatcher()))
             .setPlayer(new Player())
             .setConfig(new Config(config))
-            .setCanvas(new Canvas(canvas));
+            .setCanvas(new Canvas(canvas))
 
         // dummy state
         this.setState(new State(this));
@@ -25,6 +27,8 @@ export default class Game {
 
     async load(callback) {
         await Promise.all(callback.call(this, this.getLoader()));
+
+        this.getDispatcher().dispatch('loaded');
 
         return this;
     }
@@ -60,6 +64,24 @@ export default class Game {
 
     end(fps, panic) {
         this.getState().end(fps, panic);
+    }
+
+    // ------------------------------------------------------------------------
+    // Dispatcher
+
+    #dispatcher;
+
+    setDispatcher(dispatcher) {
+        if (! (dispatcher instanceof Dispatcher)) {
+            throw "not a Dispatcher instance";
+        }
+
+        this.#dispatcher = dispatcher;
+        return this;
+    }
+
+    getDispatcher() {
+        return this.#dispatcher;
     }
 
     // ------------------------------------------------------------------------

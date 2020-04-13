@@ -7,25 +7,17 @@ Game.create('#game').load(loader => [
     loader.loadMap('dungeon', 'assets/dungeon.tmx'),
     loader.loadTileset('skull', 'assets/skull.png', 16, 4),
     loader.loadTileset('coin', 'assets/coin.png', 16, 4),
+    loader.loadAnimation('coin_animation', 'assets/coin_animation.json'),
+    loader.loadAnimation('skull_animation', 'assets/skull_animation.json'),
 ]).then(game => {
+    console.log(game.getLoader().getAnimation('skull_animation'));
+
     game.getLoader().getTileset('char').animate(
-        23,
-        new Animation(game.getLoader().getTileset('skull'), Infinity, [
-            { num: 1, delay: 200 },
-            { num: 2, delay: 200 },
-            { num: 3, delay: 200 },
-            { num: 4, delay: 200 },
-        ])
+        23, game.getLoader().getAnimation('skull_animation')
     );
 
     game.getLoader().getTileset('dungeon').animate(
-        87,
-        new Animation(game.getLoader().getTileset('coin'), Infinity, [
-            { num: 1, delay: 200 },
-            { num: 2, delay: 200 },
-            { num: 3, delay: 200 },
-            { num: 4, delay: 600 },
-        ])
+        87, game.getLoader().getAnimation('coin_animation')
     );
 
     game.setState(new (class extends State {
