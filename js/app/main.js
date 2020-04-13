@@ -6,14 +6,6 @@ import State from '/js/lib/Game/State.js';
 Game.create('#game').load(loader => [
     loader.loadMap('dungeon', 'assets/dungeon.tmx'),
 ]).then(game => {
-    //game.getLoader().getTileset('char').animate(
-    //    23, game.getLoader().getAnimation('skull_animation')
-    //);
-
-    //game.getLoader().getTileset('dungeon').animate(
-    //    87, game.getLoader().getAnimation('coin_animation')
-    //);
-
     game.setState(new (class extends State {
         constructor(game) {
             super(game);
