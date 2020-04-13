@@ -51,7 +51,7 @@ export default class Loader {
                 ts = tsx.getTilesetDefinition();
             }
 
-            let tileset = await this.loadTileset(ts.name, `${path}/${ts.image.source}`, ts.tilewidth, ts.columns);
+            let tileset = await this.loadTilesetFromImage(ts.name, `${path}/${ts.image.source}`, ts.tilewidth, ts.columns);
             map.addTileset(firstgid, tileset);
         }));
 
@@ -82,7 +82,7 @@ export default class Loader {
 
     #tilesets = {};
 
-    async loadTileset(name, src, tileSize, cols) {
+    async loadTilesetFromImage(name, src, tileSize, cols) {
         if (this.#tilesets[name] != undefined) {
             console.warn(`tileset ${name} already exists`);
             return this.#tilesets[name];
@@ -112,10 +112,13 @@ export default class Loader {
 
     #animations = {};
 
-    async loadAnimation(name, src) {
+    /**
+     * @todo remove this
+     */
+    async loadAnimationFromJson(name, src) {
         let json = await this.loadJson(src);
 
-        let tileset = await this.loadTileset(
+        let tileset = await this.loadTilesetFromImage(
             json.tileset.name,
             json.tileset.image,
             json.tileset.tileSize,
