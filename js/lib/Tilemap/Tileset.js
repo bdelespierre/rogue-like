@@ -1,7 +1,7 @@
 import Animation from '/js/lib/Tilemap/Animation.js';
 
 export default class Tileset {
-    debug=true;
+    debug=false;
 
     constructor(image, tileSize, cols) {
         this.setImage(image)
@@ -27,8 +27,8 @@ export default class Tileset {
             y,     // source y
             size,  // source width
             size,  // source height
-            pos.x, // target x
-            pos.y, // target y
+            Math.round(pos.x), // target x
+            Math.round(pos.y), // target y
             size,  // target width
             size   // target height
         );
