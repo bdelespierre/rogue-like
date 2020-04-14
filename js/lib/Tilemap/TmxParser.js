@@ -89,7 +89,7 @@ export default class TmxParser extends DOMParser {
     }
 
     getLayersDefinition() {
-        let nodes = this.getDoc().getElementsByTagName('layer'),
+        let nodes  = this.getDoc().getElementsByTagName('layer'),
             layers = [];
 
         for (let i = 0; i < nodes.length; i++) {
@@ -100,7 +100,12 @@ export default class TmxParser extends DOMParser {
                 throw "unable to parse encodings other than CSV";
             }
 
-            layers.push(data.textContent.split(',').map(num => parseInt(num)));
+            layers.push({
+                name:   node.getAttribute('name'),
+                width:  parseInt(node.getAttribute('width')),
+                height: parseInt(node.getAttribute('height')),
+                tiles:  data.textContent.split(',').map(num => parseInt(num)),
+            });
         }
 
         return layers;

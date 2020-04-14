@@ -41,7 +41,6 @@ export default class Tileset {
             if(this.hasCollisionBoxes(num)) {
                 ctx.fillStyle = 'rgba(255,0,0,0.3)';
                 this.getCollisionBoxes(num).forEach(box => {
-                    console.log(pos.x + box.x, pos.y + box.y, box.w, box.h);
                     ctx.fillRect(pos.x + box.x, pos.y + box.y, box.w, box.h)
                 });
             }

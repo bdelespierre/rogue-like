@@ -51,7 +51,7 @@ export default class Loader {
         }));
 
         tmx.getLayersDefinition().forEach(layer => {
-            map.addLayer(layer);
+            map.addLayer(layer.name, layer.tiles);
         });
 
         this.#maps[name] = map;
@@ -114,8 +114,6 @@ export default class Loader {
                 });
             }
         });
-
-        console.log(tileset);
 
         return tileset;
     }

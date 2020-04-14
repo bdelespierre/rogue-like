@@ -31,7 +31,7 @@ export default class Map extends Drawable {
 
         for (let c = startCol; c <= endCol; c++) {
             for (let r = startRow; r <= endRow; r++) {
-                for (let l = 0; l < this.getLayers(); l++) {
+                for (let l in this.getLayers()) {
                     let num = this.getTile(l, c, r);
 
                     // 0 => empty tile
@@ -158,24 +158,23 @@ export default class Map extends Drawable {
     // ------------------------------------------------------------------------
     // Layers
 
-    #layers = [];
+    #layers = {};
 
-    addLayer(tiles) {
-        this.#layers.push(tiles);
+    addLayer(name, tiles) {
+        this.#layers[name] = tiles;
         return this;
     }
 
     getLayers() {
-        return this.#layers.length;
+        return this.#layers;
     }
 
-    setTile(layer, col, row, value) {
+    getLayer(layer) {
         if (this.#layers[layer] == undefined) {
             throw "no such layer " + layer;
         }
 
-        this.#layers[layer][row * this.getCols() + col] = value;
-        return this;
+        return this.#layers[layer];
     }
 
     getTile(layer, col, row) {
@@ -188,6 +187,24 @@ export default class Map extends Drawable {
         }
 
         return this.#layers[layer][row * this.getCols() + col] ?? 0;
+    }
+
+    setTile(layer, col, row, value) {
+        if (this.#layers[layer] == undefined) {
+            throw "no such layer " + layer;
+        }
+
+        this.#layers[layer][row * this.getCols() + col] = value;
+        return this;
+    }
+
+    emptyLayer(layer) {
+        if (this.#layers[layer] == undefined) {
+            throw "no such layer" + layer;
+        }
+
+        this.#layers[layer] = [];
+        return this;
     }
 
     // ------------------------------------------------------------------------
