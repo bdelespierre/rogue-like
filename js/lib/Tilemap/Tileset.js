@@ -1,7 +1,8 @@
 import Animation from '/js/lib/Tilemap/Animation.js';
+import Box from '/js/lib/Geometry2D/Box.js';
 
 export default class Tileset {
-    debug=false;
+    debug=true;
 
     constructor(image, tileSize, cols) {
         this.setImage(image)
@@ -36,6 +37,14 @@ export default class Tileset {
         if (this.debug) {
             ctx.strokeStyle = 'blue';
             ctx.strokeRect(pos.x, pos.y, size, size);
+
+            if(this.hasCollisionBoxes(num)) {
+                ctx.fillStyle = 'rgba(255,0,0,0.3)';
+                this.getCollisionBoxes(num).forEach(box => {
+                    console.log(pos.x + box.x, pos.y + box.y, box.w, box.h);
+                    ctx.fillRect(pos.x + box.x, pos.y + box.y, box.w, box.h)
+                });
+            }
         }
     }
 
@@ -150,5 +159,31 @@ export default class Tileset {
         }
 
         return this;
+    }
+
+    // ------------------------------------------------------------------------
+    // Collisions
+
+    #collisionBoxes = {};
+
+    addCollisionBox(tileNum, box) {
+        if (! (box instanceof Box)) {
+            throw "not a Box instance";
+        }
+
+        if (this.#collisionBoxes[tileNum] == undefined) {
+            this.#collisionBoxes[tileNum] = [];
+        }
+
+        this.#collisionBoxes[tileNum].push(box);
+        return this;
+    }
+
+    hasCollisionBoxes(tileNum) {
+        return tileNum in this.#collisionBoxes;
+    }
+
+    getCollisionBoxes(tileNum) {
+        return this.#collisionBoxes[tileNum];
     }
 }

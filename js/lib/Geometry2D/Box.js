@@ -31,16 +31,13 @@ export default class Box {
         ];
     }
 
+    // x_overlaps = (a.left < b.right) && (a.right > b.left)
+    // y_overlaps = (a.top < b.bottom) && (a.bottom > b.top)
+    // collision = x_overlaps && y_overlaps
+    //
     overlaps(box) {
-        const a = this.getVectors(),
-              b = box.getVectors();
-
-        let d1x = b[0].x - a[1].x,
-            d1y = b[0].y - a[1].y,
-            d2x = a[0].x - b[1].x,
-            d2y = a[0].y - b[1].y;
-
-        return ! (d1x > 0 || d1y > 0 || d2x > 0 || d2y > 0);
+        return (this.x < box.x + box.w) && (this.x + this.w > box.x)
+            && (this.y < box.y + box.h) && (this.y + this.h > box.y);
     }
 
     // ------------------------------------------------------------------------
@@ -107,7 +104,15 @@ export default class Box {
         return this.getWidth();
     }
 
+    get w() {
+        return this.getWidth();
+    }
+
     set width(width) {
+        this.setWidth(width);
+    }
+
+    set w(width) {
         this.setWidth(width);
     }
 
@@ -133,7 +138,15 @@ export default class Box {
         return this.getHeight();
     }
 
+    get h() {
+        return this.getHeight();
+    }
+
     set height(height) {
+        this.setHeight(height);
+    }
+
+    set h(height) {
         this.setHeight(height);
     }
 }

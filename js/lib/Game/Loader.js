@@ -1,4 +1,5 @@
 import Animation from '/js/lib/Tilemap/Animation.js';
+import Box from '/js/lib/Geometry2D/Box.js';
 import Dispatcher from '/js/lib/Game/Dispatcher.js';
 import Map from '/js/lib/Tilemap/Map.js';
 import Tileset from '/js/lib/Tilemap/Tileset.js';
@@ -105,7 +106,16 @@ export default class Loader {
                     new Animation(tileset, Infinity, frames)
                 );
             }
-        })
+
+            if (tile.objectgroup != undefined) {
+                tile.objectgroup.objects.forEach(obj => {
+                    let box = new Box([obj.x, obj.y], obj.width, obj.height);
+                    tileset.addCollisionBox(tile.id + 1, box)
+                });
+            }
+        });
+
+        console.log(tileset);
 
         return tileset;
     }

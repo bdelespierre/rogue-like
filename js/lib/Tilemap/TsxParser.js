@@ -54,6 +54,7 @@ export default class TsxParser extends DOMParser {
                 tile = { id: parseInt(node.getAttribute('id')) };
 
             this.getAnimation(node, tile);
+            this.getObjectGroup(node, tile);
             tiles.push(tile);
         }
 
@@ -76,6 +77,32 @@ export default class TsxParser extends DOMParser {
             tile.animation.push({
                 tileid: parseInt(frame.getAttribute('tileid')),
                 duration: frame.getAttribute('duration'),
+            });
+        }
+    }
+
+    getObjectGroup(root, tile) {
+        let objectgroup = root.querySelector('objectgroup');
+
+        if (! objectgroup) {
+            return;
+        }
+
+        let objects = objectgroup.getElementsByTagName('object');
+        tile.objectgroup = {
+            draworder: objectgroup.getAttribute('draworder'),
+            objects: [],
+        };
+
+        for (let i = 0; i < objects.length; i++) {
+            let object = objects.item(i);
+
+            tile.objectgroup.objects.push({
+                id:     parseInt(object.getAttribute('id')),
+                x:      parseInt(object.getAttribute('x')),
+                y:      parseInt(object.getAttribute('y')),
+                width:  parseInt(object.getAttribute('width')),
+                height: parseInt(object.getAttribute('height')),
             });
         }
     }
