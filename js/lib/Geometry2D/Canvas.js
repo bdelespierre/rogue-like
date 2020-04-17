@@ -1,8 +1,16 @@
+import Box from '/js/lib/Geometry2D/Box.js';
 import Drawable from '/js/lib/Geometry2D/Drawable.js';
+import Point from '/js/lib/Geometry2D/Point.js';
 
 export default class Canvas {
     constructor(element) {
         this.setElement(element);
+    }
+
+    setImageSmoothing(enabled) {
+        let context = this.getContext();
+        context.imageSmoothingEnabled = enabled;
+        return this;
     }
 
     // ------------------------------------------------------------------------
@@ -35,6 +43,19 @@ export default class Canvas {
 
     getHeight() {
         return this.#element.height;
+    }
+
+    getBox() {
+        return new Box([0, 0], this.getWidth(), this.getHeight());
+    }
+
+    getClickPos(event) {
+        const rect = this.getElement().getBoundingClientRect();
+
+        return new Point(
+            event.clientX - rect.left,
+            event.clientY - rect.top
+        );
     }
 
     // ------------------------------------------------------------------------

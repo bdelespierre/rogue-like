@@ -3,7 +3,7 @@ export default class Countdown {
         this.setDelay(delay)
             .setOriginalDelay(delay)
             .setCallback(fn)
-            .setReps(reps || 1);
+            .setReps(reps ?? 1);
     }
 
     update(delta) {
@@ -25,6 +25,10 @@ export default class Countdown {
     #originalDelay;
 
     setDelay(delay) {
+        if (delay <= 0) {
+            throw "delay cannot be null or netgative";
+        }
+
         this.#delay = delay;
         return this;
     }

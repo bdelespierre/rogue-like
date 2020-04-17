@@ -58,6 +58,10 @@ export default class Map extends Drawable {
         return this.getRows() * this.getTileSize();
     }
 
+    getBox() {
+        return new Box([0, 0], this.getWidth(), this.getHeight());
+    }
+
     // ------------------------------------------------------------------------
     // Columns
 
@@ -207,6 +211,26 @@ export default class Map extends Drawable {
         return this;
     }
 
+    getTileCoordinates(pos) {
+        if (pos instanceof Array) {
+            pos = new Point(pos[0], pos[1]);
+        }
+
+        if (! (pos instanceof Point)) {
+            throw "not a Point instance";
+        }
+
+        if (! pos.isInside(this.getBox())) {
+            return false;
+        }
+
+        let tsize = this.getTileSize(),
+            col = Math.floor(pos.x / tsize),
+            row = Math.floor(pos.y / tsize);
+
+        return [col, row];
+    }
+
     // ------------------------------------------------------------------------
     // Camera
 
@@ -227,5 +251,23 @@ export default class Map extends Drawable {
 
     getCamera() {
         return this.#camera;
+    }
+
+    translateCameraPosition(pos) {
+        if (pos instanceof Array) {
+            pos = new Point(pos[0], pos[1]);
+        }
+
+        if (! (pos instanceof Point)) {
+            throw "not a Point instance";
+        }
+
+        let camera = this.getCamera(),
+            zoomFactor = this.getCamera().getZoomFactor();
+
+        return new Point(
+            (pos.x / zoomFactor) + camera.x,
+            (pos.y / zoomFactor) + camera.y
+        );
     }
 }

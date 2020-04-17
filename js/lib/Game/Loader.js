@@ -35,14 +35,10 @@ export default class Loader {
     #maps = {};
 
     async loadMap(name, src) {
-        let tmx = await this.loadTmx(src),
-            definition = tmx.getMapDefinition(),
-            map = new Map(definition.cols, definition.rows, definition.tileSize);
-
-        // paths (source) in .tmx & .tsx files are relative to the
-        // file itself so we need to prepend a prefix to fetch the
-        // images and the .tsx files.
-        let path = src.substr(0, src.lastIndexOf('/'));
+        let tmx  = await this.loadTmx(src),
+            def  = tmx.getMapDefinition(),
+            map  = new Map(def.cols, def.rows, def.tileSize),
+            path = src.substr(0, src.lastIndexOf('/'));
 
         await Promise.all(tmx.getTilesetsDefinition().map(async ts => {
             map.addTileset(ts.firstgid, ts.type == "tsx"
@@ -110,7 +106,7 @@ export default class Loader {
             if (tile.objectgroup != undefined) {
                 tile.objectgroup.objects.forEach(obj => {
                     let box = new Box([obj.x, obj.y], obj.width, obj.height);
-                    tileset.addCollisionBox(tile.id + 1, box)
+                    tileset.addCollisionBox(tile.id + 1, box);
                 });
             }
         });

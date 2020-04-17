@@ -1,5 +1,6 @@
 import Animation from '/js/lib/Tilemap/Animation.js';
-import Box from "/js/lib/Geometry2D/Box.js";
+import Box from '/js/lib/Geometry2D/Box.js';
+import Camera from '/js/lib/Game/Camera.js';
 import Game from '/js/lib/Game/Game.js';
 import Point from '/js/lib/Geometry2D/Point.js';
 import State from '/js/lib/Game/State.js';
@@ -17,50 +18,52 @@ Game.create('#game').load(loader => [
             this.map = game.getLoader().getMap('dungeon');
             canvas.addItem(this.map);
 
-            this.camera = new Box(
-                [0, 0],
-                canvas.getWidth(),
-                canvas.getHeight()
-            );
+            this.camera = new Camera(game.getCanvas());
             this.map.setCamera(this.camera);
 
-            let ctx = canvas.getContext();
-            ctx.scale(3, 3);
-            ctx.imageSmoothingEnabled = false;
+            canvas.setImageSmoothing(false);
 
-            this.map.addLayer('debug', []);
-            this.map.addTileset(1000, new DummyTileset(16))
-            game.getCanvas().getElement().addEventListener('mousemove', event => {
-                var rect = game.getCanvas().getElement().getBoundingClientRect(),
-                    x = event.clientX - rect.left,
-                    y = event.clientY - rect.top;
+            this.map.addLayer('debug', []).addTileset(1000, new DummyTileset(16))
+            canvas.getElement().addEventListener('mousemove', event => {
+                this.map.emptyLayer('debug');
 
-                // careful with the zoom (3x3)!
-                // careful with the camera!
-                let col = Math.floor(((x / 3) + this.camera.x) / this.map.getTileSize()),
-                    row = Math.floor(((y / 3) + this.camera.y) / this.map.getTileSize());
+                const pos  = this.map.translateCameraPosition(canvas.getClickPos(event)),
+                    coords = this.map.getTileCoordinates(pos);
 
-                this.map.emptyLayer('debug').setTile('debug', col, row, 1001);
+                if (coords != false) {
+                    const [col, row] = coords;
+                    this.map.setTile('debug', col, row, 1001);
+                }
+            });
+
+            canvas.getElement().addEventListener('wheel', event => {
+                event.preventDefault();
+
+                event.deltaY < 0
+                    ? this.camera.zoomIn(-0.01 * event.deltaY + 1)
+                    : this.camera.zoomOut(0.01 * event.deltaY + 1);
             });
         }
         begin(timestamp, delta) {
             let inputs = this.getGame().getPlayer().getInputs(),
-                scrollSpeed = 2.5;
+                scrollSpeed = 2.5,
+                minX = 0, maxX = (this.map.getWidth()) - this.camera.width / this.camera.getZoomFactor(),
+                minY = 0, maxY = (this.map.getHeight()) - this.camera.height / this.camera.getZoomFactor();
 
             if (inputs.isDown('ArrowUp')) {
-                this.camera.getPosition().translateY(-scrollSpeed);
+                this.camera.getPosition().translateY(-scrollSpeed, minY, maxY);
             }
 
             if (inputs.isDown('ArrowDown')) {
-                this.camera.getPosition().translateY(scrollSpeed);
+                this.camera.getPosition().translateY(scrollSpeed, minY, maxY);
             }
 
             if (inputs.isDown('ArrowLeft')) {
-                this.camera.getPosition().translateX(-scrollSpeed);
+                this.camera.getPosition().translateX(-scrollSpeed, minX, maxX);
             }
 
             if (inputs.isDown('ArrowRight')) {
-                this.camera.getPosition().translateX(scrollSpeed);
+                this.camera.getPosition().translateX(scrollSpeed, minX, maxX);
             }
         }
         update(delta) {
