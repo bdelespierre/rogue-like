@@ -1,6 +1,5 @@
 import Animation from '/js/lib/Tilemap/Animation.js';
 import Box from '/js/lib/Geometry2D/Box.js';
-import Camera from '/js/lib/Game/Camera.js';
 import Game from '/js/lib/Game/Game.js';
 import Point from '/js/lib/Geometry2D/Point.js';
 import State from '/js/lib/Game/State.js';
@@ -18,7 +17,7 @@ Game.create('#game').load(loader => [
             this.map = game.getLoader().getMap('dungeon');
             canvas.addItem(this.map);
 
-            this.camera = new Camera(game.getCanvas());
+            this.camera = canvas.getBox();
             this.map.setCamera(this.camera);
 
             canvas.setImageSmoothing(false);
@@ -27,8 +26,7 @@ Game.create('#game').load(loader => [
             canvas.getElement().addEventListener('mousemove', event => {
                 this.map.emptyLayer('debug');
 
-                const pos  = this.map.translateCameraPosition(canvas.getClickPos(event)),
-                    coords = this.map.getTileCoordinates(pos);
+                const coords = this.map.getTileCoordinates(canvas.getClickPos(event));
 
                 if (coords != false) {
                     const [col, row] = coords;
@@ -39,16 +37,14 @@ Game.create('#game').load(loader => [
             canvas.getElement().addEventListener('wheel', event => {
                 event.preventDefault();
 
-                event.deltaY < 0
-                    ? this.camera.zoomIn(-0.01 * event.deltaY + 1)
-                    : this.camera.zoomOut(0.01 * event.deltaY + 1);
+                this.map.setScale(Math.min(4, Math.max(1, event.deltaY < 0 ? this.map.getScale() + 1 : this.map.getScale() - 1)));
             });
         }
         begin(timestamp, delta) {
             let inputs = this.getGame().getPlayer().getInputs(),
                 scrollSpeed = 2.5,
-                minX = 0, maxX = (this.map.getWidth()) - this.camera.width / this.camera.getZoomFactor(),
-                minY = 0, maxY = (this.map.getHeight()) - this.camera.height / this.camera.getZoomFactor();
+                minX = 0, maxX = Math.max(0, (this.map.getWidth())  - this.camera.width),
+                minY = 0, maxY = Math.max(0, (this.map.getHeight()) - this.camera.height);
 
             if (inputs.isDown('ArrowUp')) {
                 this.camera.getPosition().translateY(-scrollSpeed, minY, maxY);
@@ -72,6 +68,11 @@ Game.create('#game').load(loader => [
         }
         draw(interp) {
             this.getGame().getCanvas().clear().draw(interp);
+
+            let ctx = this.getGame().getCanvas().getContext();
+
+            ctx.fillStyle = "red";
+            ctx.fillRect(100, 100, 10, 10);
         }
     })(game)).run();
 });

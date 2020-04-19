@@ -4,6 +4,7 @@ import Point from '/js/lib/Geometry2D/Point.js';
 import Tileset from '/js/lib/Tilemap/Tileset.js';
 
 export default class Map extends Drawable {
+
     constructor(cols, rows, tileSize, camera) {
         super();
 
@@ -11,6 +12,7 @@ export default class Map extends Drawable {
             .setRows(rows)
             .setTileSize(tileSize)
             .setCamera(camera)
+            .setScale(1);
     }
 
     update(delta) {
@@ -22,6 +24,7 @@ export default class Map extends Drawable {
     draw(ctx, interp) {
         let camera   = this.getCamera(),
             tsize    = this.getTileSize(),
+            scale    = this.getScale(),
             startCol = Math.floor(camera.x / tsize),
             startRow = Math.floor(camera.y / tsize),
             endCol   = startCol + (camera.width / tsize),
@@ -44,18 +47,18 @@ export default class Map extends Drawable {
                     tileset.drawTile(ctx, new Point(
                         (c - startCol) * tsize + offsetX,
                         (r - startRow) * tsize + offsetY
-                    ), this.translateTileToTilesetNum(num));
+                    ), this.translateTileToTilesetNum(num), scale);
                 }
             }
         }
     }
 
     getWidth() {
-        return this.getCols() * this.getTileSize();
+        return this.getCols() * this.getTileSize() * this.getScale();
     }
 
     getHeight() {
-        return this.getRows() * this.getTileSize();
+        return this.getRows() * this.getTileSize() * this.getScale();
     }
 
     getBox() {
@@ -114,6 +117,24 @@ export default class Map extends Drawable {
 
     getTileSize() {
         return this.#tileSize;
+    }
+
+    // ------------------------------------------------------------------------
+    // Scale
+
+    #scale;
+
+    setScale(scale) {
+        if (scale <= 0) {
+            throw "scale cannot be null or negative";
+        }
+
+        this.#scale = scale;
+        return this;
+    }
+
+    getScale() {
+        return this.#scale;
     }
 
     // ------------------------------------------------------------------------
@@ -225,8 +246,9 @@ export default class Map extends Drawable {
         }
 
         let tsize = this.getTileSize(),
-            col = Math.floor(pos.x / tsize),
-            row = Math.floor(pos.y / tsize);
+            scale = this.getScale(),
+            col   = Math.floor(pos.x / tsize / scale),
+            row   = Math.floor(pos.y / tsize / scale);
 
         return [col, row];
     }
@@ -251,23 +273,5 @@ export default class Map extends Drawable {
 
     getCamera() {
         return this.#camera;
-    }
-
-    translateCameraPosition(pos) {
-        if (pos instanceof Array) {
-            pos = new Point(pos[0], pos[1]);
-        }
-
-        if (! (pos instanceof Point)) {
-            throw "not a Point instance";
-        }
-
-        let camera = this.getCamera(),
-            zoomFactor = this.getCamera().getZoomFactor();
-
-        return new Point(
-            (pos.x / zoomFactor) + camera.x,
-            (pos.y / zoomFactor) + camera.y
-        );
     }
 }

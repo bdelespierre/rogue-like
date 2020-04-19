@@ -26,8 +26,10 @@ export default class Animation {
         }
     }
 
-    drawTile(ctx, pos) {
-        this.getTileset().drawTile(ctx, pos, this.getCurrentFrame().num);
+    drawTile(ctx, pos, scale) {
+        let frame = this.getCurrentFrame();
+
+        this.getTileset().drawTile(ctx, pos, frame.num, scale);
     }
 
     // ------------------------------------------------------------------------

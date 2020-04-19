@@ -11,10 +11,15 @@ export default class DummyTileset extends Tileset {
         super(new Image, tileSize, 1);
     }
 
-    drawTile(ctx, pos, num) {
+    drawTile(ctx, pos, num, scale) {
         let size = this.getTileSize();
 
         ctx.fillStyle = this.styles[num] ?? 'rgba(255,255,255,0.1)';
-        ctx.fillRect(Math.round(pos.x), Math.round(pos.y), size, size);
+        ctx.fillRect(
+            Math.round(pos.x) * scale,
+            Math.round(pos.y) * scale,
+            size * scale,
+            size * scale
+        );
     }
 }

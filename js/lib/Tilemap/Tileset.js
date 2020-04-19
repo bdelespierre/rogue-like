@@ -2,17 +2,15 @@ import Animation from '/js/lib/Tilemap/Animation.js';
 import Box from '/js/lib/Geometry2D/Box.js';
 
 export default class Tileset {
-    debug=true;
-
     constructor(image, tileSize, cols) {
         this.setImage(image)
             .setTileSize(tileSize)
             .setCols(cols);
     }
 
-    drawTile(ctx, pos, num) {
+    drawTile(ctx, pos, num, scale) {
         if (this.isAnimated(num)) {
-            return this.getAnimation(num).drawTile(ctx, pos);
+            return this.getAnimation(num).drawTile(ctx, pos, scale);
         }
 
         let img    = this.getImage(),
@@ -23,18 +21,18 @@ export default class Tileset {
             y = Math.floor((num - 1) / tsCols) * size;
 
         ctx.drawImage(
-            img,   // image
-            x,     // source x
-            y,     // source y
-            size,  // source width
-            size,  // source height
-            Math.round(pos.x), // target x
-            Math.round(pos.y), // target y
-            size,  // target width
-            size   // target height
+            img,                       // image
+            x,                         // source x
+            y,                         // source y
+            size,                      // source width
+            size,                      // source height
+            Math.round(pos.x) * scale, // target x
+            Math.round(pos.y) * scale, // target y
+            size * scale,              // target width
+            size * scale               // target height
         );
 
-        if (this.debug) {
+        if (window.debug) {
             ctx.strokeStyle = 'blue';
             ctx.strokeRect(pos.x, pos.y, size, size);
 
