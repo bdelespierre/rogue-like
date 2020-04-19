@@ -4,7 +4,6 @@ import Point from '/js/lib/Geometry2D/Point.js';
 import Tileset from '/js/lib/Tilemap/Tileset.js';
 
 export default class Map extends Drawable {
-
     constructor(cols, rows, tileSize, camera) {
         super();
 
@@ -27,8 +26,8 @@ export default class Map extends Drawable {
             scale    = this.getScale(),
             startCol = Math.floor(camera.x / tsize),
             startRow = Math.floor(camera.y / tsize),
-            endCol   = startCol + (camera.width / tsize),
-            endRow   = startRow + (camera.height / tsize),
+            endCol   =  startCol + (camera.width  / tsize),
+            endRow   =  startRow + (camera.height / tsize),
             offsetX  = -camera.x + startCol * tsize,
             offsetY  = -camera.y + startRow * tsize;
 

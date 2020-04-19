@@ -12,13 +12,18 @@ Game.create('#game').load(loader => [
         constructor(game) {
             super(game);
 
-            let canvas = game.getCanvas();
-            this.map = game.getLoader().getMap('dungeon');
-            canvas.addItem(this.map);
-            canvas.setImageSmoothing(false);
+            let canvas  = game.getCanvas();
+            this.map    = game.getLoader().getMap('dungeon');
             this.camera = canvas.getBox();
-            this.map.setCamera(this.camera);
-            this.map.addLayer('debug', []).addTileset(1000, new DummyTileset(16));
+
+            canvas
+                .addItem(this.map)
+                .setImageSmoothing(false);
+
+            this.map
+                .setCamera(this.camera)
+                .addLayer('debug', [])
+                .addTileset(1000, new DummyTileset(16));
         }
 
         begin(timestamp, delta) {
@@ -28,19 +33,19 @@ Game.create('#game').load(loader => [
                 minY = 0, maxY = Math.max(0, (this.map.getHeight()) - this.camera.height);
 
             if (inputs.keyboard.isDown('ArrowUp')) {
-                this.camera.getPosition().translateY(-scrollSpeed, minY, maxY);
+                this.camera.pos.translateY(-scrollSpeed, minY, maxY);
             }
 
             if (inputs.keyboard.isDown('ArrowDown')) {
-                this.camera.getPosition().translateY(scrollSpeed, minY, maxY);
+                this.camera.pos.translateY(scrollSpeed, minY, maxY);
             }
 
             if (inputs.keyboard.isDown('ArrowLeft')) {
-                this.camera.getPosition().translateX(-scrollSpeed, minX, maxX);
+                this.camera.pos.translateX(-scrollSpeed, minX, maxX);
             }
 
             if (inputs.keyboard.isDown('ArrowRight')) {
-                this.camera.getPosition().translateX(scrollSpeed, minX, maxX);
+                this.camera.pos.translateX(scrollSpeed, minX, maxX);
             }
 
             if (inputs.mouse.wheelUp()) {
