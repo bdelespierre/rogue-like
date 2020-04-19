@@ -247,8 +247,8 @@ export default class Map extends Drawable {
 
         let tsize = this.getTileSize(),
             scale = this.getScale(),
-            col   = Math.floor(pos.x / tsize / scale),
-            row   = Math.floor(pos.y / tsize / scale);
+            col   = Math.floor((pos.x / scale) / tsize),
+            row   = Math.floor((pos.y / scale) / tsize);
 
         return [col, row];
     }
@@ -273,5 +273,14 @@ export default class Map extends Drawable {
 
     getCamera() {
         return this.#camera;
+    }
+
+    translateCameraPosition(pos) {
+        const camera = this.getCamera();
+
+        return new Point(
+            pos.x + (camera.x * this.getScale()),
+            pos.y + (camera.y * this.getScale())
+        );
     }
 }

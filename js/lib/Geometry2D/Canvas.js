@@ -8,8 +8,8 @@ export default class Canvas {
     }
 
     setImageSmoothing(enabled) {
-        let context = this.getContext();
-        context.imageSmoothingEnabled = enabled;
+        this.getContext().imageSmoothingEnabled = enabled;
+
         return this;
     }
 
@@ -49,13 +49,13 @@ export default class Canvas {
         return new Box([0, 0], this.getWidth(), this.getHeight());
     }
 
-    getClickPos(event) {
-        const rect = this.getElement().getBoundingClientRect();
+    getClickPos(event, point) {
+        const rect = this.getElement().getBoundingClientRect(),
+            x = event.clientX - rect.left,
+            y = event.clientY - rect.top;
 
-        return new Point(
-            event.clientX - rect.left,
-            event.clientY - rect.top
-        );
+        // avoids creating too many Point instances
+        return point != undefined ? point.setX(x).setY(y) : new Point(x, y);
     }
 
     // ------------------------------------------------------------------------

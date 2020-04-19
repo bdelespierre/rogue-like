@@ -13,59 +13,60 @@ Game.create('#game').load(loader => [
             super(game);
 
             let canvas = game.getCanvas();
-
             this.map = game.getLoader().getMap('dungeon');
             canvas.addItem(this.map);
-
+            canvas.setImageSmoothing(false);
             this.camera = canvas.getBox();
             this.map.setCamera(this.camera);
-
-            canvas.setImageSmoothing(false);
-
-            this.map.addLayer('debug', []).addTileset(1000, new DummyTileset(16))
-            canvas.getElement().addEventListener('mousemove', event => {
-                this.map.emptyLayer('debug');
-
-                const coords = this.map.getTileCoordinates(canvas.getClickPos(event));
-
-                if (coords != false) {
-                    const [col, row] = coords;
-                    this.map.setTile('debug', col, row, 1001);
-                }
-            });
-
-            canvas.getElement().addEventListener('wheel', event => {
-                event.preventDefault();
-
-                this.map.setScale(Math.min(4, Math.max(1, event.deltaY < 0 ? this.map.getScale() + 1 : this.map.getScale() - 1)));
-            });
+            this.map.addLayer('debug', []).addTileset(1000, new DummyTileset(16));
         }
+
         begin(timestamp, delta) {
-            let inputs = this.getGame().getPlayer().getInputs(),
+            let inputs = this.getGame().getInputs(),
                 scrollSpeed = 2.5,
                 minX = 0, maxX = Math.max(0, (this.map.getWidth())  - this.camera.width),
                 minY = 0, maxY = Math.max(0, (this.map.getHeight()) - this.camera.height);
 
-            if (inputs.isDown('ArrowUp')) {
+            if (inputs.keyboard.isDown('ArrowUp')) {
                 this.camera.getPosition().translateY(-scrollSpeed, minY, maxY);
             }
 
-            if (inputs.isDown('ArrowDown')) {
+            if (inputs.keyboard.isDown('ArrowDown')) {
                 this.camera.getPosition().translateY(scrollSpeed, minY, maxY);
             }
 
-            if (inputs.isDown('ArrowLeft')) {
+            if (inputs.keyboard.isDown('ArrowLeft')) {
                 this.camera.getPosition().translateX(-scrollSpeed, minX, maxX);
             }
 
-            if (inputs.isDown('ArrowRight')) {
+            if (inputs.keyboard.isDown('ArrowRight')) {
                 this.camera.getPosition().translateX(scrollSpeed, minX, maxX);
             }
+
+            if (inputs.mouse.wheelUp()) {
+                this.map.setScale(Math.min(4, this.map.getScale() + 1));
+            }
+
+            if (inputs.mouse.wheelDown()) {
+                this.map.setScale(Math.max(1, this.map.getScale() - 1));
+            }
+
+            inputs.mouse.resetWheel();
+
+            this.map.emptyLayer('debug');
+            const coords = this.map.getTileCoordinates(this.map.translateCameraPosition(inputs.mouse.position));
+
+            if (coords != false) {
+                const [col, row] = coords;
+                this.map.setTile('debug', col, row, 1001);
+            }
         }
+
         update(delta) {
             super.update(delta);
             this.map.update(delta);
         }
+
         draw(interp) {
             this.getGame().getCanvas().clear().draw(interp);
 

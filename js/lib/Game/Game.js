@@ -1,17 +1,17 @@
 import Canvas from '/js/lib/Geometry2D/Canvas.js';
 import Config from '/js/lib/Game/Config.js';
 import Dispatcher from '/js/lib/Game/Dispatcher.js';
+import Inputs from '/js/lib/UI/Inputs.js';
 import Loader from '/js/lib/Game/Loader.js';
-import Player from '/js/lib/Game/Player.js';
 import State from '/js/lib/Game/State.js';
 
 export default class Game {
     constructor(canvas, config) {
         this.setDispatcher(new Dispatcher())
             .setLoader(new Loader(this.getDispatcher()))
-            .setPlayer(new Player())
             .setConfig(new Config(config))
             .setCanvas(new Canvas(canvas))
+            .setInputs(new Inputs(this.getCanvas()))
 
         // dummy state
         this.setState(new State(this));
@@ -121,21 +121,21 @@ export default class Game {
     }
 
     // ------------------------------------------------------------------------
-    // Player
+    // Inputs
 
-    #player;
+    #inputs;
 
-    setPlayer(player) {
-        if (! (player instanceof Player)) {
-            throw "not a Player instance";
+    setInputs(inputs) {
+        if (! (inputs instanceof Inputs)) {
+            throw "not an Inputs instance";
         }
 
-        this.#player = player;
+        this.#inputs = inputs;
         return this;
     }
 
-    getPlayer() {
-        return this.#player;
+    getInputs() {
+        return this.#inputs;
     }
 
     // ------------------------------------------------------------------------
